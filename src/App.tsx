@@ -9,42 +9,28 @@ const App = () => {
     const [form, setForm] = React.useState<Record<[id: string], {value: string; validated?: boolean}>>({})
     const [validation, setValidation] = React.useState<Record<[id: string], boolean>>({})
 
-
-    const validateInput = (value, regexp) => {
-        console.log('validate', value, regexp.test(value))
-        return regexp.test(value)
-    }
-
     const validateEachInput = async () => {
-        // hit a stupid snag and its broke because of trying to update states.
-        // need to add a local array, and then fail the submission, then update validation
-        // - its so much easier to validate each input. URGGHH
-        for (const id of Object.keys(form)) {
+        let validated = {};
+        Object.keys(form).forEach((id) => {
+            console.log(id, form[id].value, EMAIL_REGEX.test(form[id].value))
             switch (id) {
                 case 'email':
-                    setValidation((prev) => ({
-                        ...prev, [id]: validateInput(form[id].value, EMAIL_REGEX)
-                    }));
+                    console.log(id, form[id].value, {...validated, [id]: EMAIL_REGEX.test(form[id].value)})
+                    return validated = {...validated, [id]: EMAIL_REGEX.test(form[id].value)};
                 case 'password':
-                    setValidation((prev) => ({
-                        ...prev, [id]: validateInput(form[id].value, PASSWORD_REGEX)
-                    }));
+                    return validated = {...validated, [id]: PASSWORD_REGEX.test(form[id].value)};
                 case 'colour':
-                    setValidation((prev) => ({
-                        ...prev, [id]: validateInput(form[id].value, NOT_EMPTY_REGEX)
-                    }));
+                    return validated = {...validated, [id]: NOT_EMPTY_REGEX.test(form[id].value)};
                 case 'animals':
-                    setValidation((prev) => ({
-                        ...prev, [id]: Array.isArray(form[id].value) && form[id].value.length === 2
-                    }));
+                    return validated = {...validated, [id]: Array.isArray(form[id].value) && form[id].value.length === 2};
                 case 'typeOfTiger':
-                    setValidation((prev) => ({
-                        ...prev, [id]: validateInput(form[id].value, NOT_EMPTY_REGEX)
-                    }));
+                    return validated = {...validated, [id]: NOT_EMPTY_REGEX.test(form[id].value)};
                 default:
                     break;
             }
-        }
+        });
+        console.log('validated', validated);
+        setValidation(validated);
     }
 
     const onSubmit = async (evt: FormEvent<HTMLFormElement>) => {
