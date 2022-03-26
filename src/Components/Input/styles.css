@@ -1,0 +1,28 @@
+
+.input-wrapper input {
+    border: 1px solid #b6b6b6;
+    padding: 8px;
+    border-radius: 4px;
+    display: flex;
+    min-width: 300px;
+}
+
+.input-error {
+    color: red;
+    font-size: 12px;
+    display: none;
+}
+
+.input-label {
+    margin-bottom: 8px;
+    display: none;
+}
+
+.input:not(:first-of-type) {
+    margin-top: 15px;
+}
+
+.input:last-of-type {
+    margin-bottom: 15px;
+}
+

@@ -1,0 +1,97 @@
+@import './Components/Card/styles.css';
+@import './Components/Input/styles.css';
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+label {
+  margin-bottom: 8px;
+
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.App {
+  background: #f4f4f4;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.container {
+  padding: 0 15px;
+}
+
+.display {
+  display: block;
+}
+
+select {
+  min-width: 320px;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #b6b6b6;
+}
+
+.animals-checkboxes {
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: 10px 0;
+}
+.animals-checkboxes > .checkboxes {
+  display: flex;
+  justify-content: space-between;
+}
+
+.animals-checkboxes label {
+  text-transform: capitalize;
+  padding-right: 5px;
+}
+
+.colour-dropdown {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+.colour-dropdown select {
+  min-width: 320px;
+}
+
+button {
+  padding: 8px 15px;
+  background: #7b7bbb;
+  border: none;
+  box-shadow: 1px 0px 10px 0px rgb(0 0 0 / 15%);
+  border-radius: 4px;
+  color: white;
+  font-weight: bold;
+  margin-top: 15px;
+}
+
+form > div {
+  padding: 10px 0;
+}
+
+form > div > h3 {
+  margin-top: 0;
+}
+
+form > div:first-of-type {
+  padding: 0 0 10px 0;
+}
+
+hr {
+  background-color: #b6b6b6;
+  border: none;
+  height: 1px;
+}
