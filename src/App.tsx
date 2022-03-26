@@ -6,16 +6,20 @@ import Input from './Components/Input'
 import { ANIMALS, COLOURS, EMAIL_REGEX, NOT_EMPTY_REGEX, PASSWORD_REGEX } from './consts'
 
 const App = () => {
-    const [form, setForm] = React.useState<Record<[id: string], {value: string; validated?: boolean}>>({})
+    const [form, setForm] = React.useState<Record<[id: string], {value: string; validated?: boolean}>>({
+        'email': { value: ''},
+        'password': { value: ''},
+        'animals': { value: ''},
+        'colour': { value: ''},
+        'typeOfTiger': { value: ''}
+    })
     const [validation, setValidation] = React.useState<Record<[id: string], boolean>>({})
 
     const validateEachInput = async () => {
         let validated = {};
         Object.keys(form).forEach((id) => {
-            console.log(id, form[id].value, EMAIL_REGEX.test(form[id].value))
             switch (id) {
                 case 'email':
-                    console.log(id, form[id].value, {...validated, [id]: EMAIL_REGEX.test(form[id].value)})
                     return validated = {...validated, [id]: EMAIL_REGEX.test(form[id].value)};
                 case 'password':
                     return validated = {...validated, [id]: PASSWORD_REGEX.test(form[id].value)};
@@ -24,12 +28,11 @@ const App = () => {
                 case 'animals':
                     return validated = {...validated, [id]: Array.isArray(form[id].value) && form[id].value.length === 2};
                 case 'typeOfTiger':
-                    return validated = {...validated, [id]: NOT_EMPTY_REGEX.test(form[id].value)};
+                    return validated = {...validated, [id]: !NOT_EMPTY_REGEX.test(form[id].value)};
                 default:
                     break;
             }
         });
-        console.log('validated', validated);
         setValidation(validated);
     }
 
@@ -90,6 +93,13 @@ const App = () => {
                                   id: 'colour',
                                   value: evt.target.value
                               })}>
+                                  <option
+                                      value=""
+                                      disabled
+                                      selected
+                                  >
+                                      Please select a colour
+                                  </option>
                                   {COLOURS.map((value, index) => (
                                       <option
                                           key={`${value}-${index}`}
@@ -99,6 +109,9 @@ const App = () => {
                                       </option>
                                   ))}
                               </select>
+                              <div className={`input-error ${validation['colour'] === false ? 'display' : ''}`}>
+                                  <p>Please select a colour</p>
+                              </div>
                           </div>
                       </div>
                       <div className="animals-checkboxes">
