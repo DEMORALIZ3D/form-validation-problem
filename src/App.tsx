@@ -2,52 +2,47 @@ import * as React from 'react';
 import './App.css'
 import Card from "./Components/Card";
 import {FormEvent} from "react";
-import Input from './Components/Input'
-import { ANIMALS, COLOURS, EMAIL_REGEX, NOT_EMPTY_REGEX, PASSWORD_REGEX } from './consts'
+import { FORM_INITAL_STATE } from './consts'
+import { FormState, ValidationState } from './types'
+import YourDetails from './Components/YourDetails'
+import YourAnimal from './Components/YourAnimal'
+import { validateFormData } from './utils/validateFormData'
 
 const App = () => {
-    const [form, setForm] = React.useState<Record<[id: string], {value: string; validated?: boolean}>>({
-        'email': { value: ''},
-        'password': { value: ''},
-        'animals': { value: ''},
-        'colour': { value: ''},
-        'typeOfTiger': { value: ''}
-    })
-    const [validation, setValidation] = React.useState<Record<[id: string], boolean>>({})
+    const [form, setForm] = React.useState<FormState>(FORM_INITAL_STATE)
+    const [validation, setValidation] = React.useState<ValidationState>({})
+    const [formSent, setFormSent] = React.useState<boolean>(false)
 
-    const validateEachInput = async () => {
-        let validated = {};
-        Object.keys(form).forEach((id) => {
-            switch (id) {
-                case 'email':
-                    return validated = {...validated, [id]: EMAIL_REGEX.test(form[id].value)};
-                case 'password':
-                    return validated = {...validated, [id]: PASSWORD_REGEX.test(form[id].value)};
-                case 'colour':
-                    return validated = {...validated, [id]: NOT_EMPTY_REGEX.test(form[id].value)};
-                case 'animals':
-                    return validated = {...validated, [id]: Array.isArray(form[id].value) && form[id].value.length === 2};
-                case 'typeOfTiger':
-                    return validated = {...validated, [id]: !NOT_EMPTY_REGEX.test(form[id].value)};
-                default:
-                    break;
-            }
-        });
-        setValidation(validated);
-    }
-
-    const onSubmit = async (evt: FormEvent<HTMLFormElement>) => {
+    const onSubmit = (evt: FormEvent<HTMLFormElement>) => {
+        // prevents reload
         evt.preventDefault();
-        await validateEachInput();
+        // we have a form sent trigger so we can then tell the "app" it's ready to submit
+        setFormSent(true);
+        // ValidateInput (done on submit)
+        setValidation(() => validateFormData(form));
     };
 
     React.useEffect(() => {
+        /*
+         * So I have never done validation on form submit before, I normally have inputs that validate on the fly
+         * like this one I made on codesandbox when I some spare dev time:
+         * https://codesandbox.io/s/doitallinput-euvkv
+         */
         const doesAllValidationFail = Object.values(validation)?.includes(false);
-        console.log('validation', Object.values(validation), !doesAllValidationFail)
-        if(Object.values(validation).length > 0 && !doesAllValidationFail) {
+        if(Object.values(validation).length > 0 && !doesAllValidationFail && formSent) {
+            /*
+             * I would normally add a state that triggers a new view that said something like:
+             * it's on its way!
+             */
             alert('submitted');
-        }
+            // sets state back so you can fill the form in fresh again.
+            setForm(FORM_INITAL_STATE);
+        };
+        // resets the form sent flag
+        setFormSent(false);
     }, [validation]);
+
+
 
     const onChange = (data: {
         id: string,
@@ -64,85 +59,21 @@ const App = () => {
               <h1>Fill out this awesome form!</h1>
               <form onSubmit={(evt) => onSubmit(evt)}>
                   <div>
-                      <h3>Your Details</h3>
-                      <Input
-                          id="email"
-                          value={form['email']?.value}
-                          callback={onChange}
-                          label="Email"
-                          validationMessage="Please enter a correct email"
-                          validated={validation['email']}
-                      />
-                      <Input
-                          id="password"
-                          value={form['password']?.value}
-                          callback={onChange}
-                          label="Password"
-                          validationMessage="Minimum eight characters, at least one letter and one number"
-                          validated={validation['password']}
-                          type="password"
+                      <YourDetails
+                          form={form}
+                          validation={validation}
+                          onChange={onChange}
                       />
                   </div>
                   <hr />
                   <div>
-                      <h3>Your Animal</h3>
-                      <div className="colour-dropdown">
-                          <label>Colour:</label>
-                          <div>
-                              <select onChange={(evt) => onChange({
-                                  id: 'colour',
-                                  value: evt.target.value
-                              })}>
-                                  <option
-                                      value=""
-                                      disabled
-                                      selected
-                                  >
-                                      Please select a colour
-                                  </option>
-                                  {COLOURS.map((value, index) => (
-                                      <option
-                                          key={`${value}-${index}`}
-                                          value={value}
-                                      >
-                                          {value}
-                                      </option>
-                                  ))}
-                              </select>
-                              <div className={`input-error ${validation['colour'] === false ? 'display' : ''}`}>
-                                  <p>Please select a colour</p>
-                              </div>
-                          </div>
-                      </div>
-                      <div className="animals-checkboxes">
-                          <label>Animals:</label>
-                          <div className="checkboxes">
-                              {ANIMALS.map((value, index) => (
-                                  <div key={`${value}-${index}`}>
-                                      <label>{value}</label>
-                                      <input
-                                          id="animal"
-                                          checked={form['animal']?.value === value}
-                                          onChange={(evt) => onChange({
-                                              id: 'animal',
-                                              value: evt.target.checked ? value : ''
-                                          })}
-                                          type="checkbox"
-                                      />
-                                  </div>
-                              ))}
-                          </div>
-                      </div>
-                      {form['animal']?.value === 'tiger' && (
-                          <Input
-                              id="typeOfTiger"
-                              value={form['typeOfTiger']?.value}
-                              callback={onChange}
-                              label="Type of Tiger"
-                              validationMessage="Please enter a type of tiger"
-                              validated={validation['typeOfTiger']}
-                          />
-                      )}
+                      <YourAnimal
+                          form={form}
+                          validation={validation}
+                          onChange={onChange}
+                          setValidation={setValidation}
+                          setForm={setForm}
+                      />
                   </div>
                   <hr/>
                   <button type="submit">Create Account</button>
